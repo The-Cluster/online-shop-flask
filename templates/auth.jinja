@@ -1,0 +1,76 @@
+{% extends 'base.jinja' %} {% block content %}
+
+<!---->
+<div class="container" style="padding-top: 100px; padding-bottom: 100px">
+	{% if signup %}
+	<h2>Регистрация</h2>
+
+	<form method="post" action="{{ url_for('signup') }}">
+		<form>
+			<div class="form-group">
+				<label for="exampleInputEmail1">Логин</label>
+				<input
+					type="text"
+					name="username"
+					class="form-control"
+					id="exampleInputEmail1"
+					placeholder="Введите логин"
+				/>
+			</div>
+			<div class="form-group">
+				<label for="exampleInputPassword1">Пароль</label>
+				<input
+					type="password"
+					name="password"
+					class="form-control"
+					id="exampleInputPassword1"
+					placeholder="Введите пароль"
+				/>
+			</div>
+
+			<button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+		</form>
+		{% with messages = get_flashed_messages() %} {% if messages %}
+		<ul>
+			{% for message in messages %} {{ message }} {% endfor %}
+		</ul>
+		{% endif %} {% endwith %}
+	</form>
+	{% endif %}
+
+	<!---->
+	{% if login %}
+	<h2>Авторизация</h2>
+	<form method="post" action="{{ url_for('login') }}">
+		<form>
+			<div class="form-group">
+				<label for="username">Логин</label>
+				<input
+					type="text"
+					name="username"
+					class="form-control"
+					aria-describedby="emailHelp"
+					placeholder="Введите логин"
+				/>
+			</div>
+			<div class="form-group">
+				<label for="password">Пароль</label>
+				<input
+					type="password"
+					name="password"
+					class="form-control"
+					id="exampleInputPassword1"
+					placeholder="Введите пароль"
+				/>
+			</div>
+			<button type="submit" class="btn btn-primary">Войти</button>
+		</form>
+		{% with messages = get_flashed_messages() %} {% if messages %}
+		<ul>
+			{% for message in messages %} {{ message }} {% endfor %}
+		</ul>
+		{% endif %} {% endwith %}
+	</form>
+	{% endif %}
+</div>
+{% endblock %}

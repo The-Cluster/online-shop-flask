@@ -1,0 +1,81 @@
+{% extends "base.jinja" %}
+{% block content %}
+    {% if orders %}
+        <h1 class="text-center" style="font-weight: 650; padding: 15px">История заказов</h1>
+        <h2 class="text-center"> {{ username }}</h2>
+        <div class="container">
+            {% for order in orders %}
+            <div class="border" style="border-radius: 10px; padding: 15px">
+                <div class="row">
+                    <div class="col">
+                        <h3>Номер заказа</h3>
+                        <h3>{{ order.id }}</h3>
+                    </div>
+
+                    <div class="col">
+                        <h3>Оформлен</h3>
+                        <h3>{{ order.date | russian_month }} {{ order.date.strftime('%#d, %Y') }}</h3>
+                    </div>
+
+                    <div class="col">
+                        <h3>Сумма</h3>
+                        <h3>{{ order.price|int }} ₽</h3>
+                    </div>
+
+                    <div class="col">
+                        <h3>Информация</h3>
+                        <h3>{{ order.info }} </h3>
+                    </div>
+
+                    <div class="col">
+                        <h3>Статус</h3>
+                        <h3> {{ order.status }} </h3>
+                    </div>
+                </div>
+            </div>
+
+                {% for order_product in order.order_products %}
+                <div class="row mb-1 justify-content-center align-items-center" style="padding: 15px">
+                    <div class="col text-center"> <div class="img-container"><img
+                                style="border-radius: 15px"
+                                class="border border-black"
+                                src="{{ order_product.product.url or '/static/No-Image-Placeholder.svg' }}"
+                            /></div></div>
+                    <div class="col text-center"><h2>{{ order_product.product.name }}</h2></div>
+                    <div class="col text-center"><h2>{{ order_product.quantity_ordered }}</h2></div>
+                    <div class="col text-center"><h2>{{ order_product.quantity_ordered * order_product.product.price }} ₽</h2></div>
+                </div>
+                {% endfor %}
+                {% if not loop.last %} <div style="padding: 15px;"></div>{% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="container">
+            <h1 style="font-size: 84px; font-weight: 1000" class="text-center">Ваша история пуста</h1>
+            <h2 class="text-center">
+                Вернуться на <a href="/">главную страницу</a>
+            </h2>
+        </div>
+    {% endif %}
+
+<style>
+    .remove-btn {
+        border: none; /* Удаляем границы */
+        background: none; /* Удаляем фон */
+        cursor: pointer; /* Делаем курсор указывающим */
+        padding: 0; /* Удаляем отступы */
+        font-size: 32px; /* Наследуем размер шрифта */
+    }
+
+	.img-container {
+		width: 100%;
+		height: 200px;
+		overflow: visible;
+	}
+
+	.img-container img {
+		width: 66%;
+		height: auto;
+	}
+</style>    
+{% endblock  %}

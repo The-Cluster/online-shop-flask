@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_Слой_2" data-name="Слой 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 570.81 61.16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #1d1d1b;
+        letter-spacing: -.08em;
+      }
+
+      .cls-2 {
+        fill: #ffed00;
+      }
+
+      .cls-2, .cls-3 {
+        letter-spacing: -.08em;
+      }
+
+      .cls-3 {
+        fill: #ea5298;
+      }
+
+      .cls-4 {
+        font-family: SpaceAge, 'Space Age';
+        font-size: 72px;
+      }
+    </style>
+  </defs>
+  <g id="_Слой_1-2" data-name="Слой 1">
+    <text class="cls-4" transform="translate(0 54.32)"><tspan class="cls-3" x="0" y="0">Online</tspan><tspan class="cls-1" x="301.61" y="0"> </tspan><tspan class="cls-2" x="328.46" y="0">Shop</tspan></text>
+  </g>
+</svg>

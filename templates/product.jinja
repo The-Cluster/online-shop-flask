@@ -1,0 +1,106 @@
+{% extends 'base.jinja' %} {% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="img-container">
+				<img
+					style="border-radius: 15px"
+					class="border border-white"
+					src="{{ product.url or '/static/No-Image-Placeholder.svg' }}"
+				/>
+			</div>
+		</div>
+		<div class="col">
+			<h1>{{ product.name }}</h1>
+
+			<h1>{{ product.price | int }} ₽</h1>
+			{% set has_available_sizes = sizes|selectattr('quantity', '>', 0)|list %}
+            {% if has_available_sizes %}
+                {% set has_available_sizes = true %}
+            {% else %}
+                {% set has_available_sizes = false %}
+            {% endif %}
+
+			{% if has_available_sizes %}
+				<div class="form-group">
+					<label for="exampleFormControlSelect1"></label>
+					<select class="form-control mb-3" name="size_id" id="size_id">
+						{% for size in sizes %} 
+							{% if size.quantity > 0 %}
+								<option value="{{ size.id }}" data-quantity="{{ size.quantity }}">{{ size.name }}</option>
+							{% else %}
+								<option value="{{ size.id }}" disabled>{{ size.name }} (нет в наличии)</option>
+							{% endif %} 
+						{% endfor %}
+					</select>
+
+					<input
+						class="form-control mb-3"
+						type="number"
+						name="quantity"
+						id="quantity"
+						min="1"
+						max="quantity"
+						value="1"
+					/>
+
+				</div>
+
+				<form action="{{ url_for('add_to_cart') }}" method="post">
+					<input type="hidden" name="product_id" value="{{ product.id }}" />
+					<input type="hidden" name="size_id" id="selected_size" value="" />
+					<input type="hidden" name="quantity" id="selected_quantity" value="" />
+
+					<button type="submit" class="btn btn-primary">Добавить в корзину</button>
+				</form>
+			{% else %}
+				<h3>Нет в наличии</h3>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+<style>
+	.img-container {
+		width: 100%;
+		height: 750px;
+		overflow: hidden;
+	}
+
+	.img-container img {
+		width: 100%;
+		height: auto;
+	}
+</style>
+
+
+<script>
+	// Функция для установки выбранного размера и его количества в скрытые поля формы
+	function setSizeAndQuantity() {
+		var sizeSelect = document.getElementById("size_id");
+		var quantityInput = document.getElementById("quantity");
+
+		// Устанавливаем максимальное количество для выбранного размера
+		var selectedSize = sizeSelect.options[sizeSelect.selectedIndex];
+		quantityInput.max = parseInt(selectedSize.dataset.quantity); 
+
+		// Если текущее значение quantity превышает доступное количество, устанавливаем его на максимальное доступное
+		if (parseInt(quantityInput.value) > parseInt(quantityInput.max)) {
+			quantityInput.value = quantityInput.max;
+		}
+
+		// Обновляем скрытое поле с размером и количеством
+		document.getElementById("selected_size").value = sizeSelect.value;
+		document.getElementById("selected_quantity").value = quantityInput.value;
+	}
+
+	// Вызываем функцию при изменении выбранного размера
+	document.getElementById("size_id").addEventListener("change", setSizeAndQuantity);
+
+	// Вызываем функцию при изменении количества
+	document.getElementById("quantity").addEventListener("change", setSizeAndQuantity);
+
+	// Вызываем функцию при загрузке страницы
+	setSizeAndQuantity();
+</script>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends 'base.jinja' %}
+{% block content %}
+    {% if user_cart %}
+        <div class="container">
+            <div class="row mb-4 justify-content-center align-items-center">
+                <div class="col text-center"><h2 style="font-weight: 650">Товар</h2></div>
+                <div class="col text-center"><h2 style="font-weight: 650">Размер</h2></div>
+                <div class="col text-center"><h2 style="font-weight: 650">Цена</h2></div>
+                <div class="col text-center"><h2 style="font-weight: 650">Количество</h2></div>
+                <div class="col text-center"><h2 style="font-weight: 650">Итоговая цена</h2></div>
+                <div class="col text-center"></div>
+            </div>
+
+            {% for cart_item, product, size in user_cart %}
+            <div class="row mb-1 justify-content-center align-items-center">
+                <div class="col text-center"> <div class="img-container"><img
+                            style="border-radius: 15px"
+                            class="border border-black"
+                            src="{{ product.url or '/static/No-Image-Placeholder.svg' }}"
+                        /></div></div>
+                <div class="col text-center"><h2>{{ size.name }}</h2></div>
+                <div class="col text-center"><h2>{{ product.price }} ₽</h2></div>
+                <div class="col text-center">
+                    {% if size.quantity <= 0 and cart_item.quantity > 0 %}
+                        <h2 style="color: red;">Нет в наличии</h2>
+                    {% elif cart_item.quantity > size.quantity %}
+                        <h2 style="color: red;">Превышает доступное количество</h2>
+                    {% else %}
+                        <h2>{{ cart_item.quantity }}</h2>
+                    {% endif %}
+                </div>
+
+                <div class="col text-center"><h2>{{ product.price * cart_item.quantity }} ₽</h2></div>
+                <div class="col text-center">
+                    <form action="/remove_from_cart" method="post">
+                        <input type="hidden" name="user_id" value="{{ user_id }}">
+                        <input type="hidden" name="product_id" value="{{ cart_item.product_id }}">
+                        <input type="hidden" name="size_id" value="{{ cart_item.size_id }}">
+                        <button type="submit" class="remove-btn"><i class="fa-solid fa-circle-xmark"></i></button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+
+            
+            <div class="border" style="border-radius: 10px; padding: 10px;">
+                <div class="container">
+
+                    <form action="{{ url_for('place_an_order') }}" method="post">
+                        {% if not unavailable %}
+                            <h2 style="font-weight: 650">Сумма заказа: {{ total_price|int }} ₽</h2>
+
+                            <div class="form-row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationDefault01">Имя</label>
+                                    <input type="text" class="form-control" name="first_name" id="validationDefault01" placeholder="Имя" value="" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationDefault02">Фамилия</label>
+                                    <input type="text" class="form-control" name="last_name" id="validationDefault02" placeholder="Фамилия" value="" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAddress">Адрес</label>
+                                <input type="text" class="form-control" name="address" id="inputAddress" placeholder="Адрес">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputCity">Город</label>
+                                    <input type="text" class="form-control" name="city" id="inputCity">
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="inputZip">Индекс</label>
+                                    <input type="text" class="form-control" name="zip_code" id="inputZip" oninput="formatZIP(event)">
+                                </div>
+                            </div>  
+                            
+                            <div class="form-row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationDefault01">Номер карты</label>
+                                    <input type="text" class="form-control" name="card_number" id="validationDefault01" placeholder="0000 0000 0000 0000" value="" required oninput="formatCardNumber(event)">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationDefault01">Месяц/Год</label>
+                                    <input type="text" class="form-control" name="card_expiry" id="validationDefault01" placeholder="MM/YY" value="" required oninput="formatExpiryDate(event)">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationDefault01">CVV</label>
+                                    <input type="text" maxlength="3" class="form-control" name="card_cvv" id="validationDefault02" placeholder="CVV" value="" required oninput="formatCVV(event)">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-dark"><h3>Оформить заказ</h3></button>
+                        {% else %}
+                            <button type="submit" class="btn btn-gray" disabled><h3>Оформить заказ</h3></button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% else %}
+    
+    <div class="container">
+        <h1 style="font-size: 84px; font-weight: 1000" class="text-center">Ваша корзина пуста!</h1>
+        <h2 class="text-center">
+            Вернуться на <a href="/">главную страницу</a>
+        </h2>
+    </div>
+    {% endif %}
+
+<style>
+    .remove-btn {
+        border: none; /* Удаляем границы */
+        background: none; /* Удаляем фон */
+        cursor: pointer; /* Делаем курсор указывающим */
+        padding: 0; /* Удаляем отступы */
+        font-size: 32px; /* Наследуем размер шрифта */
+    }
+
+	.img-container {
+		width: 100%;
+		height: 210px;
+		overflow: hidden;
+	}
+
+	.img-container img {
+		width: 85%;
+		height: auto;
+	}
+</style>   
+
+<script>
+    function formatZIP(event) {
+        let input = event.target;
+        input.value = input.value.replace(/\D/g, '').substring(0, 7);
+    }
+
+    function formatCardNumber(event) {
+        let input = event.target;
+        let value = input.value.replace(/\D/g, '').substring(0, 16);
+        let formattedValue = '';
+
+        for (let i = 0; i < value.length; i++) {
+            if (i % 4 === 0 && i !== 0) {
+                formattedValue += ' ';
+            }
+            formattedValue += value[i];
+        }
+
+        input.value = formattedValue;
+
+    }
+
+    function formatExpiryDate(event) {
+        let input = event.target;
+        let value = input.value.replace(/\D/g, '').substring(0, 4); // Убираем все, кроме цифр и ограничиваем до 4 символов
+        let formattedValue = '';
+
+        for (let i = 0; i < value.length; i++) {
+            if (i === 2 && value.length > 2) {
+                formattedValue += '/';
+            }
+            formattedValue += value[i];
+        }
+
+        input.value = formattedValue;
+    }
+
+    function formatCVV(event) {
+        let input = event.target;
+        input.value = input.value.replace(/\D/g, '').substring(0, 3); // Убираем все, кроме цифр и ограничиваем до 3 символов
+    }
+</script>
+{% endblock content %}
